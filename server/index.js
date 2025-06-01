@@ -19,9 +19,7 @@ app.use(express.json({}));
 app.use("/", router);
 
 mongoose
-  .connect(
-    "mongodb+srv://srivastav:sojCQCgGZYaAz8Pt@cluster0.ck6zo.mongodb.net/postly"
-  )
+  .connect(process.env.MONGODB_URI)
   .then(() => {
     console.log("Connected to MongoDB");
   })
