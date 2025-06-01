@@ -19,8 +19,8 @@ const worker = new Worker(
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "srivastavkancharala@gmail.com",
-        pass: "fltt bugl mayz tbvm",
+        user: process.env.GMAIL_USERNAME,
+        pass: process.env.GMAIL_PASSWORD, // Use environment variables for security
       },
       tls: {
         rejectUnauthorized: false, // ❗Use only for dev/testing
