@@ -5,16 +5,15 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Create a Redis connection
-const connection = new IORedis({
-  host: "localhost", // or the Redis container name if inside Docker Compose
-  port: 6379,
-  maxRetriesPerRequest: null, // 🔥 REQUIRED by BullMQ
+const connection = new IORedis(process.env.REDIS_URL, {
+  maxRetriesPerRequest: null,
+  tls: {},
 });
 // Create the BullMQ worker with the Redis connection
 const worker = new Worker(
   "emailQueue",
   async (job) => {
-    const { to, subject, text, html } = job.data;
+    const { to, subject, text } = job.data;
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -28,17 +27,21 @@ const worker = new Worker(
     });
 
     const mailOptions = {
-      from: "srivastavkancharala@gmail.com",
+      from: process.env.GMAIL_USERNAME,
       to,
       subject,
       text,
-      html,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error("Error occurred:", error.message);
       } else {
+        console.log(
+          process.env.REDIS_URL,
+          process.env.GMAIL_USERNAME,
+          process.env.GMAIL_PASSWORD
+        );
         console.log("Message sent:", info.messageId);
         console.log(`Email sent to ${to}`);
       }

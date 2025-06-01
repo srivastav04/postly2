@@ -4,12 +4,13 @@ import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { Queue } from "bullmq";
 import IORedis from "ioredis";
+import dotenv from "dotenv";
+dotenv.config();
 
 // Reuse or create Redis connection
-const connection = new IORedis({
-  host: "localhost",
-  port: 6379,
+const connection = new IORedis(process.env.REDIS_URL, {
   maxRetriesPerRequest: null,
+  tls: {},
 });
 const emailQueue = new Queue("emailQueue", { connection });
 
@@ -77,14 +78,14 @@ export const setProfile = async (req, res) => {
     // ✅ Add email job to BullMQ
     emailQueue.add("sendEmail", {
       to: email,
-      subject: "🎉 Welcome to Our App!",
-      text: `Hi ${userName}, welcome aboard!`,
-      html: `<h3>Hi ${userName},</h3><p>Thanks for joining! Your profile has been successfully created.</p>`,
+      subject: "Welcome to Postly!",
+      text: `Hi ${userName}, welcome aboard! Your profile has been successfully created.\n\n`,
     });
+    console.log("Email job added to queue for:", email);
 
     return res.status(200).json({
       message: "Profile saved successfully",
-      user,
+      // user,
     });
   } catch (error) {
     console.error("Error in setProfile:", error);
