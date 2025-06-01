@@ -21,9 +21,9 @@ const worker = new Worker(
         user: process.env.GMAIL_USERNAME,
         pass: process.env.GMAIL_PASSWORD, // Use environment variables for security
       },
-      tls: {
-        rejectUnauthorized: false, // ❗Use only for dev/testing
-      },
+      // tls: {
+      //   rejectUnauthorized: false, // ❗Use only for dev/testing
+      // },
     });
 
     const mailOptions = {
